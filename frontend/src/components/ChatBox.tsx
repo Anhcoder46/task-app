@@ -79,76 +79,64 @@ export function ChatBox() {
   }, []);
 
   return (
-    <div className={`chatbox ${isExpanded ? 'chatbox-expanded' : ''}`} id="chatbox">
-      <button
-        className="chatbox-toggle"
-        onClick={() => setIsExpanded(!isExpanded)}
-        id="chatbox-toggle"
-      >
-        💬 Chat
-        {messages.length > 0 && (
-          <span className="chat-badge">{messages.length}</span>
-        )}
-      </button>
-
-      {isExpanded && (
-        <div className="chatbox-content">
-          {!isJoined ? (
-            <form onSubmit={joinChat} className="chat-join" id="chat-join-form">
-              <h3>Tham gia Chat</h3>
+    <div className="chatbox chatbox-expanded" id="chatbox" style={{ position: 'relative', bottom: 'auto', right: 'auto', width: '100%', maxWidth: '800px', margin: '0 auto', height: '600px' }}>
+      <div className="chatbox-content" style={{ height: '100%' }}>
+        {!isJoined ? (
+          <form onSubmit={joinChat} className="chat-join" id="chat-join-form">
+            <h3>Tham gia Thảo luận Nhóm</h3>
+            <p style={{marginBottom: '20px', color: '#a0aec0'}}>Nhập tên của bạn để tham gia vào phòng chat Realtime</p>
+            <input
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Nhập tên của bạn..."
+              className="chat-input"
+              id="chat-username"
+              required
+            />
+            <button type="submit" className="chat-join-btn" id="chat-join-btn">
+              🚀 Tham gia ngay
+            </button>
+          </form>
+        ) : (
+          <>
+            <div className="chat-header">
+              <div className="online-users">
+                <span className="online-dot">●</span>
+                {onlineUsers.length} người đang online: {onlineUsers.join(', ')}
+              </div>
+            </div>
+            <div className="chat-messages" id="chat-messages">
+              {messages.length === 0 && (
+                <p className="chat-empty">Chưa có tin nhắn. Hãy gửi tin đầu tiên!</p>
+              )}
+              {messages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`chat-msg ${msg.user_name === userName.trim() ? 'chat-msg-mine' : ''}`}
+                >
+                  <span className="msg-author">{msg.user_name}</span>
+                  <span className="msg-content">{msg.content}</span>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+            <form onSubmit={sendMessage} className="chat-send" id="chat-send-form">
               <input
                 type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                placeholder="Nhập tên của bạn..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Nhập tin nhắn..."
                 className="chat-input"
-                id="chat-username"
-                required
+                id="chat-message-input"
               />
-              <button type="submit" className="chat-join-btn" id="chat-join-btn">
-                🚀 Tham gia
+              <button type="submit" className="chat-send-btn" id="chat-send-btn">
+                📤
               </button>
             </form>
-          ) : (
-            <>
-              <div className="chat-header">
-                <div className="online-users">
-                  <span className="online-dot">●</span>
-                  {onlineUsers.length} online: {onlineUsers.join(', ')}
-                </div>
-              </div>
-              <div className="chat-messages" id="chat-messages">
-                {messages.length === 0 && (
-                  <p className="chat-empty">Chưa có tin nhắn. Hãy gửi tin đầu tiên!</p>
-                )}
-                {messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`chat-msg ${msg.user_name === userName.trim() ? 'chat-msg-mine' : ''}`}
-                  >
-                    <span className="msg-author">{msg.user_name}</span>
-                    <span className="msg-content">{msg.content}</span>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-              <form onSubmit={sendMessage} className="chat-send" id="chat-send-form">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Nhập tin nhắn..."
-                  className="chat-input"
-                  id="chat-message-input"
-                />
-                <button type="submit" className="chat-send-btn" id="chat-send-btn">
-                  📤
-                </button>
-              </form>
-            </>
-          )}
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
