@@ -9,7 +9,7 @@ import type { Order } from '../types';
 export function useRealtimeOrders(onOrderChange: (orders: Order[]) => void) {
   const channelRef = useRef<ReturnType<ReturnType<typeof getSupabase>['channel']> | null>(null);
 
-  const fetchTasks = useCallback(async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase
@@ -18,12 +18,12 @@ export function useRealtimeOrders(onOrderChange: (orders: Order[]) => void) {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('[useRealtimeTasks] fetch error:', error.message);
+        console.error('[useRealtimeOrders] fetch error:', error.message);
         return;
       }
       onOrderChange(data || []);
     } catch (err) {
-      console.error('[useRealtimeTasks] error:', err);
+      console.error('[useRealtimeOrders] error:', err);
     }
   }, [onOrderChange]);
 
@@ -37,7 +37,7 @@ export function useRealtimeOrders(onOrderChange: (orders: Order[]) => void) {
         { event: '*', schema: 'public', table: 'orders' },
         () => {
           // Re-fetch all orders on any change
-          fetchTasks();
+          fetchOrders();
         }
       )
       .subscribe();
@@ -48,7 +48,7 @@ export function useRealtimeOrders(onOrderChange: (orders: Order[]) => void) {
         supabase.removeChannel(channelRef.current);
       }
     };
-  }, [fetchTasks]);
+  }, [fetchOrders]);
 
-  return { refetch: fetchTasks };
+  return { refetch: fetchOrders };
 }

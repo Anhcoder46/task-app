@@ -94,7 +94,7 @@ function App() {
 
       {/* Footer */}
       <footer className="app-footer">
-        <p>Order Management App — DevOps Lab © 2026</p>
+        <p>Order Tracking System — DevOps Lab © 2026</p>
       </footer>
     </div>
   );

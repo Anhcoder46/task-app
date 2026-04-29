@@ -2,7 +2,7 @@ import { getSupabaseAdmin, STORAGE_BUCKET } from '../lib/supabase.js';
 import crypto from 'crypto';
 
 // GET /api/orders
-export async function listTasks(req, res) {
+export async function listOrders(req, res) {
   try {
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
@@ -13,13 +13,13 @@ export async function listTasks(req, res) {
     if (error) throw error;
     res.json(data);
   } catch (err) {
-    console.error('[listTasks]', err.message);
+    console.error('[listOrders]', err.message);
     res.status(500).json({ error: err.message });
   }
 }
 
 // POST /api/orders
-export async function createTask(req, res) {
+export async function createOrder(req, res) {
   try {
     const supabase = getSupabaseAdmin();
     const { customer_name, product_name } = req.body;
@@ -65,13 +65,13 @@ export async function createTask(req, res) {
     if (error) throw error;
     res.status(201).json(data);
   } catch (err) {
-    console.error('[createTask]', err.message);
+    console.error('[createOrder]', err.message);
     res.status(500).json({ error: err.message });
   }
 }
 
 // PATCH /api/orders/:id/status
-export async function updateTaskStatus(req, res) {
+export async function updateOrderStatus(req, res) {
   try {
     const supabase = getSupabaseAdmin();
     const { id } = req.params;
@@ -94,7 +94,7 @@ export async function updateTaskStatus(req, res) {
 
     res.json(data);
   } catch (err) {
-    console.error('[updateTaskStatus]', err.message);
+    console.error('[updateOrderStatus]', err.message);
     res.status(500).json({ error: err.message });
   }
 }

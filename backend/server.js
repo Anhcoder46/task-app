@@ -37,9 +37,9 @@ app.use(express.json());
 app.get('/', homeController.home);
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
-app.get('/api/orders', orderController.listTasks);
-app.post('/api/orders', upload.single('file'), orderController.createTask);
-app.patch('/api/orders/:id/status', orderController.updateTaskStatus);
+app.get('/api/orders', orderController.listOrders);
+app.post('/api/orders', upload.single('file'), orderController.createOrder);
+app.patch('/api/orders/:id/status', orderController.updateOrderStatus);
 app.post('/api/orders/:id/attachment', upload.single('file'), orderController.uploadAttachment);
 app.delete('/api/orders/:id/attachment', orderController.deleteAttachment);
 
