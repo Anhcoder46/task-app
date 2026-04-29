@@ -12,22 +12,22 @@ describe('API Contract', () => {
   it('should have required endpoints defined', () => {
     const requiredEndpoints = [
       'GET /api/health',
-      'GET /api/tasks',
-      'POST /api/tasks',
-      'PATCH /api/tasks/:id/status',
-      'POST /api/tasks/:id/attachment',
-      'DELETE /api/tasks/:id/attachment',
+      'GET /api/orders',
+      'POST /api/orders',
+      'PATCH /api/orders/:id/status',
+      'POST /api/orders/:id/attachment',
+      'DELETE /api/orders/:id/attachment',
       'GET /api/messages',
       'POST /api/messages',
     ];
     expect(requiredEndpoints.length).toBe(8);
   });
 
-  it('should validate task status values', () => {
-    const validStatuses = ['open', 'in_progress', 'done'];
-    expect(validStatuses).toContain('open');
-    expect(validStatuses).toContain('in_progress');
-    expect(validStatuses).toContain('done');
+  it('should validate order status values', () => {
+    const validStatuses = ['pending', 'shipping', 'delivered'];
+    expect(validStatuses).toContain('pending');
+    expect(validStatuses).toContain('shipping');
+    expect(validStatuses).toContain('delivered');
     expect(validStatuses).not.toContain('cancelled');
   });
 });

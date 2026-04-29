@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
-import * as taskController from './src/controllers/taskController.js';
+import * as orderController from './src/controllers/orderController.js';
 import * as chatController from './src/controllers/chatController.js';
 import * as homeController from './src/controllers/homeController.js';
 import dotenv from 'dotenv';
@@ -37,11 +37,11 @@ app.use(express.json());
 app.get('/', homeController.home);
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
-app.get('/api/tasks', taskController.listTasks);
-app.post('/api/tasks', upload.single('file'), taskController.createTask);
-app.patch('/api/tasks/:id/status', taskController.updateTaskStatus);
-app.post('/api/tasks/:id/attachment', upload.single('file'), taskController.uploadAttachment);
-app.delete('/api/tasks/:id/attachment', taskController.deleteAttachment);
+app.get('/api/orders', orderController.listTasks);
+app.post('/api/orders', upload.single('file'), orderController.createTask);
+app.patch('/api/orders/:id/status', orderController.updateTaskStatus);
+app.post('/api/orders/:id/attachment', upload.single('file'), orderController.uploadAttachment);
+app.delete('/api/orders/:id/attachment', orderController.deleteAttachment);
 
 app.get('/api/messages', chatController.listMessages);
 app.post('/api/messages', chatController.sendMessage);

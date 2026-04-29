@@ -1,10 +1,10 @@
--- Bảng tasks
-create table tasks (
+-- Bảng orders
+create table orders (
   id uuid primary key default gen_random_uuid(),
-  title text not null,
-  description text null,
-  status text not null default 'open'
-    check (status in ('open', 'in_progress', 'done')),
+  customer_name text not null,
+  product_name text null,
+  status text not null default 'pending'
+    check (status in ('pending', 'shipping', 'delivered')),
   attachment_url text null,
   attachment_name text null,
   created_at timestamptz not null default now(),

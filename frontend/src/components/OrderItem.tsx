@@ -1,36 +1,36 @@
 import { useState, useRef } from 'react';
-import type { Task } from '../types';
+import type { Order } from '../types';
 import { apiFetch } from '../lib/api';
 
-interface TaskItemProps {
-  task: Task;
+interface OrderItemProps {
+  order: Order;
   onUpdated: () => void;
 }
 
-export function TaskItem({ task, onUpdated }: TaskItemProps) {
+export function OrderItem({ order, onUpdated }: OrderItemProps) {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const statusLabels: Record<string, string> = {
-    open: '🔵 Open',
-    in_progress: '🟡 In Progress',
-    done: '🟢 Done',
+    pending: '🔵 Open',
+    shipping: '🟡 In Progress',
+    delivered: '🟢 Done',
   };
 
   const nextStatus: Record<string, string> = {
-    open: 'in_progress',
-    in_progress: 'done',
-    done: 'open',
+    pending: 'shipping',
+    shipping: 'delivered',
+    delivered: 'pending',
   };
 
   const handleStatusChange = async () => {
     setLoading(true);
     try {
-      const res = await apiFetch(`/api/tasks/${task.id}/status`, {
+      const res = await apiFetch(`/api/orders/${order.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus[task.status] }),
+        body: JSON.stringify({ status: nextStatus[order.status] }),
       });
       if (!res.ok) throw new Error('Failed to update status');
       onUpdated();
@@ -47,7 +47,7 @@ export function TaskItem({ task, onUpdated }: TaskItemProps) {
       const formData = new FormData();
       formData.append('file', file);
 
-      const res = await apiFetch(`/api/tasks/${task.id}/attachment`, {
+      const res = await apiFetch(`/api/orders/${order.id}/attachment`, {
         method: 'POST',
         body: formData,
       });
@@ -63,7 +63,7 @@ export function TaskItem({ task, onUpdated }: TaskItemProps) {
   const handleDeleteAttachment = async () => {
     setLoading(true);
     try {
-      const res = await apiFetch(`/api/tasks/${task.id}/attachment`, {
+      const res = await apiFetch(`/api/orders/${order.id}/attachment`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to delete attachment');
@@ -86,36 +86,36 @@ export function TaskItem({ task, onUpdated }: TaskItemProps) {
   };
 
   return (
-    <div className={`task-item task-${task.status}`} id={`task-${task.id}`}>
-      <div className="task-header">
-        <h4 className="task-title">{task.title}</h4>
+    <div className={`order-item order-${order.status}`} id={`order-${order.id}`}>
+      <div className="order-header">
+        <h4 className="order-customer_name">{order.customer_name}</h4>
         <button
-          className={`status-badge status-${task.status}`}
+          className={`status-badge status-${order.status}`}
           onClick={handleStatusChange}
           disabled={loading}
           title="Click để đổi trạng thái"
         >
-          {statusLabels[task.status]}
+          {statusLabels[order.status]}
         </button>
       </div>
 
-      {task.description && (
-        <p className="task-description">{task.description}</p>
+      {order.product_name && (
+        <p className="order-product_name">{order.product_name}</p>
       )}
 
-      <div className="task-meta">
-        <span className="task-date">📅 {formatDate(task.created_at)}</span>
+      <div className="order-meta">
+        <span className="order-date">📅 {formatDate(order.created_at)}</span>
       </div>
 
-      {task.attachment_url ? (
-        <div className="task-attachment">
+      {order.attachment_url ? (
+        <div className="order-attachment">
           <a
-            href={task.attachment_url}
+            href={order.attachment_url}
             target="_blank"
             rel="noopener noreferrer"
             className="attachment-link"
           >
-            📎 {task.attachment_name || 'Tải file'}
+            📎 {order.attachment_name || 'Tải file'}
           </a>
           <button
             className="attachment-delete"
@@ -127,7 +127,7 @@ export function TaskItem({ task, onUpdated }: TaskItemProps) {
           </button>
         </div>
       ) : (
-        <div className="task-upload">
+        <div className="order-upload">
           <input
             type="file"
             ref={fileInputRef}
@@ -136,7 +136,7 @@ export function TaskItem({ task, onUpdated }: TaskItemProps) {
               if (f) handleFileUpload(f);
             }}
             className="hidden-file-input"
-            id={`upload-${task.id}`}
+            id={`upload-${order.id}`}
           />
           <button
             className="upload-btn"

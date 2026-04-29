@@ -1,39 +1,39 @@
 import { useState, useCallback, useEffect } from 'react';
-import { TaskForm } from './components/TaskForm';
-import { TaskList } from './components/TaskList';
+import { OrderForm } from './components/OrderForm';
+import { OrderList } from './components/OrderList';
 import { ChatBox } from './components/ChatBox';
-import { useRealtimeTasks } from './hooks/useRealtimeTasks';
+import { useRealtimeOrders } from './hooks/useRealtimeOrders';
 import { apiFetch } from './lib/api';
-import type { Task } from './types';
+import type { Order } from './types';
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'tasks' | 'chat'>('tasks');
+  const [activeTab, setActiveTab] = useState<'orders' | 'chat'>('orders');
 
-  const handleTaskChange = useCallback((newTasks: Task[]) => {
-    setTasks(newTasks);
+  const handleOrderChange = useCallback((newOrders: Order[]) => {
+    setOrders(newOrders);
     setLoading(false);
   }, []);
 
-  const { refetch } = useRealtimeTasks(handleTaskChange);
+  const { refetch } = useRealtimeOrders(handleOrderChange);
 
   // Initial fetch via API
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchOrders = async () => {
       try {
-        const res = await apiFetch('/api/tasks');
+        const res = await apiFetch('/api/orders');
         if (res.ok) {
           const data = await res.json();
-          setTasks(data);
+          setOrders(data);
         }
       } catch (err) {
-        console.error('Failed to fetch tasks:', err);
+        console.error('Failed to fetch orders:', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchTasks();
+    fetchOrders();
   }, []);
 
   return (
@@ -51,17 +51,17 @@ function App() {
           <div className="logo">
             <span className="logo-icon">✅</span>
             <div>
-              <h1>Task Manager</h1>
-              <p className="header-subtitle">Quản lý công việc realtime</p>
+              <h1>Order Manager</h1>
+              <p className="header-subtitle">Hệ thống theo dõi đơn hàng realtime</p>
             </div>
           </div>
           <nav className="tab-nav" id="tab-nav">
             <button
-              className={`tab-btn ${activeTab === 'tasks' ? 'tab-active' : ''}`}
-              onClick={() => setActiveTab('tasks')}
-              id="tab-tasks"
+              className={`tab-btn ${activeTab === 'orders' ? 'tab-active' : ''}`}
+              onClick={() => setActiveTab('orders')}
+              id="tab-orders"
             >
-              📋 Tasks
+              📋 Orders
             </button>
             <button
               className={`tab-btn ${activeTab === 'chat' ? 'tab-active' : ''}`}
@@ -76,13 +76,13 @@ function App() {
 
       {/* Main Content */}
       <main className="app-main">
-        {activeTab === 'tasks' ? (
-          <div className="tasks-layout">
-            <aside className="tasks-sidebar">
-              <TaskForm onTaskCreated={refetch} />
+        {activeTab === 'orders' ? (
+          <div className="orders-layout">
+            <aside className="orders-sidebar">
+              <OrderForm onOrderCreated={refetch} />
             </aside>
-            <section className="tasks-content">
-              <TaskList tasks={tasks} onTaskUpdated={refetch} loading={loading} />
+            <section className="orders-content">
+              <OrderList orders={orders} onOrderUpdated={refetch} loading={loading} />
             </section>
           </div>
         ) : (
@@ -94,7 +94,7 @@ function App() {
 
       {/* Footer */}
       <footer className="app-footer">
-        <p>Task Management App — DevOps Lab © 2026</p>
+        <p>Order Management App — DevOps Lab © 2026</p>
       </footer>
     </div>
   );

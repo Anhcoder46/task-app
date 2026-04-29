@@ -1,12 +1,12 @@
 import { getSupabaseAdmin, STORAGE_BUCKET } from '../lib/supabase.js';
 import crypto from 'crypto';
 
-// GET /api/tasks
+// GET /api/orders
 export async function listTasks(req, res) {
   try {
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
-      .from('tasks')
+      .from('orders')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -18,13 +18,13 @@ export async function listTasks(req, res) {
   }
 }
 
-// POST /api/tasks
+// POST /api/orders
 export async function createTask(req, res) {
   try {
     const supabase = getSupabaseAdmin();
-    const { title, description } = req.body;
+    const { customer_name, product_name } = req.body;
 
-    if (!title) {
+    if (!customer_name) {
       return res.status(400).json({ error: 'Title is required' });
     }
 
@@ -52,10 +52,10 @@ export async function createTask(req, res) {
     }
 
     const { data, error } = await supabase
-      .from('tasks')
+      .from('orders')
       .insert({
-        title,
-        description: description || null,
+        customer_name,
+        product_name: product_name || null,
         attachment_url,
         attachment_name,
       })
@@ -70,27 +70,27 @@ export async function createTask(req, res) {
   }
 }
 
-// PATCH /api/tasks/:id/status
+// PATCH /api/orders/:id/status
 export async function updateTaskStatus(req, res) {
   try {
     const supabase = getSupabaseAdmin();
     const { id } = req.params;
     const { status } = req.body;
 
-    const validStatuses = ['open', 'in_progress', 'done'];
+    const validStatuses = ['pending', 'shipping', 'delivered'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: `Status must be one of: ${validStatuses.join(', ')}` });
     }
 
     const { data, error } = await supabase
-      .from('tasks')
+      .from('orders')
       .update({ status, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
 
     if (error) throw error;
-    if (!data) return res.status(404).json({ error: 'Task not found' });
+    if (!data) return res.status(404).json({ error: 'Order not found' });
 
     res.json(data);
   } catch (err) {
@@ -99,7 +99,7 @@ export async function updateTaskStatus(req, res) {
   }
 }
 
-// POST /api/tasks/:id/attachment
+// POST /api/orders/:id/attachment
 export async function uploadAttachment(req, res) {
   try {
     const supabase = getSupabaseAdmin();
@@ -124,7 +124,7 @@ export async function uploadAttachment(req, res) {
       .getPublicUrl(fileName);
 
     const { data, error } = await supabase
-      .from('tasks')
+      .from('orders')
       .update({
         attachment_url: urlData.publicUrl,
         attachment_name: req.file.originalname,
@@ -142,24 +142,24 @@ export async function uploadAttachment(req, res) {
   }
 }
 
-// DELETE /api/tasks/:id/attachment
+// DELETE /api/orders/:id/attachment
 export async function deleteAttachment(req, res) {
   try {
     const supabase = getSupabaseAdmin();
     const { id } = req.params;
 
-    // Get current task to find the file path
-    const { data: task, error: fetchError } = await supabase
-      .from('tasks')
+    // Get current order to find the file path
+    const { data: order, error: fetchError } = await supabase
+      .from('orders')
       .select('attachment_url')
       .eq('id', id)
       .single();
 
     if (fetchError) throw fetchError;
 
-    if (task?.attachment_url) {
+    if (order?.attachment_url) {
       // Extract file name from URL
-      const urlParts = task.attachment_url.split('/');
+      const urlParts = order.attachment_url.split('/');
       const fileName = urlParts[urlParts.length - 1];
 
       await supabase.storage
@@ -168,7 +168,7 @@ export async function deleteAttachment(req, res) {
     }
 
     const { data, error } = await supabase
-      .from('tasks')
+      .from('orders')
       .update({
         attachment_url: null,
         attachment_name: null,

@@ -18,4 +18,4 @@ export function getSupabaseAdmin() {
   return _supabaseAdmin;
 }
 
-export const STORAGE_BUCKET = process.env.STORAGE_BUCKET || 'task-attachments';
+export const STORAGE_BUCKET = process.env.STORAGE_BUCKET || 'order-attachments';

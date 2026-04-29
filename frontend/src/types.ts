@@ -1,8 +1,8 @@
-export interface Task {
+export interface Order {
   id: string;
-  title: string;
-  description: string | null;
-  status: 'open' | 'in_progress' | 'done';
+  customer_name: string;
+  product_name: string | null;
+  status: 'pending' | 'shipping' | 'delivered';
   attachment_url: string | null;
   attachment_name: string | null;
   created_at: string;

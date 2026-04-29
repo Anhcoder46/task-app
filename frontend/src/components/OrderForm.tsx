@@ -1,13 +1,13 @@
 import { useState, FormEvent, useRef } from 'react';
 import { apiFetch } from '../lib/api';
 
-interface TaskFormProps {
-  onTaskCreated: () => void;
+interface OrderFormProps {
+  onOrderCreated: () => void;
 }
 
-export function TaskForm({ onTaskCreated }: TaskFormProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+export function OrderForm({ onOrderCreated }: OrderFormProps) {
+  const [customer_name, setTitle] = useState('');
+  const [product_name, setDescription] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -15,32 +15,32 @@ export function TaskForm({ onTaskCreated }: TaskFormProps) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!customer_name.trim()) return;
 
     setLoading(true);
     setError('');
 
     try {
       const formData = new FormData();
-      formData.append('title', title.trim());
-      if (description.trim()) formData.append('description', description.trim());
+      formData.append('customer_name', customer_name.trim());
+      if (product_name.trim()) formData.append('product_name', product_name.trim());
       if (file) formData.append('file', file);
 
-      const res = await apiFetch('/api/tasks', {
+      const res = await apiFetch('/api/orders', {
         method: 'POST',
         body: formData,
       });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to create task');
+        throw new Error(data.error || 'Failed to create order');
       }
 
       setTitle('');
       setDescription('');
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
-      onTaskCreated();
+      onOrderCreated();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -49,43 +49,43 @@ export function TaskForm({ onTaskCreated }: TaskFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="task-form" id="task-form">
-      <h2 className="form-title">
+    <form onSubmit={handleSubmit} className="order-form" id="order-form">
+      <h2 className="form-customer_name">
         <span className="form-icon">✨</span>
-        Tạo Task Mới
+        Tạo Order Mới
       </h2>
 
       {error && <div className="form-error" id="form-error">{error}</div>}
 
       <div className="form-group">
-        <label htmlFor="task-title">Tiêu đề *</label>
+        <label htmlFor="order-customer_name">Tên Khách Hàng *</label>
         <input
-          id="task-title"
+          id="order-customer_name"
           type="text"
-          value={title}
+          value={customer_name}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Nhập tiêu đề task..."
+          placeholder="Nhập tiêu đề order..."
           required
           className="form-input"
         />
       </div>
 
       <div className="form-group">
-        <label htmlFor="task-description">Mô tả</label>
+        <label htmlFor="order-product_name">Tên Sản Phẩm</label>
         <textarea
-          id="task-description"
-          value={description}
+          id="order-product_name"
+          value={product_name}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Nhập mô tả chi tiết..."
+          placeholder="Nhập tên sản phẩm..."
           rows={3}
           className="form-textarea"
         />
       </div>
 
       <div className="form-group">
-        <label htmlFor="task-file">Đính kèm file</label>
+        <label htmlFor="order-file">Đính kèm file</label>
         <input
-          id="task-file"
+          id="order-file"
           type="file"
           ref={fileInputRef}
           onChange={(e) => setFile(e.target.files?.[0] || null)}
@@ -98,14 +98,14 @@ export function TaskForm({ onTaskCreated }: TaskFormProps) {
 
       <button
         type="submit"
-        disabled={loading || !title.trim()}
+        disabled={loading || !customer_name.trim()}
         className="form-submit"
-        id="submit-task"
+        id="submit-order"
       >
         {loading ? (
           <span className="loading-spinner">⏳ Đang tạo...</span>
         ) : (
-          <span>🚀 Tạo Task</span>
+          <span>🚀 Tạo Order</span>
         )}
       </button>
     </form>
